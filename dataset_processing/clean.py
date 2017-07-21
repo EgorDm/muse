@@ -17,18 +17,7 @@ def clean_lines(text):
 
 
 def clean_song(song_path):
-    with open(song_path, 'r') as sf:
+    with open(song_path, 'r', encoding='utf8') as sf:
         text = clean_lines(sf.read())
     with open(song_path, 'w', encoding='utf8') as sf:
         sf.write(''.join(text))
-
-
-artist = 'stratovarius'
-BASE_DIR = '../data/lyrics/{}'.format(artist)
-
-if not os.path.isdir(BASE_DIR): raise Exception('No such directory')
-
-songs = os.listdir(BASE_DIR)
-for song in songs:
-    print('Processing: ' + song)
-    clean_song(BASE_DIR + '/' + song)
