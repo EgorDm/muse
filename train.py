@@ -37,7 +37,7 @@ def run(settings):
 
     trainer = MainTrainer(batcher, validation_batcher, model, settings)
 
-    trainer.train(10)
+    trainer.train(settings.num_epochs)
 
 
 def get_cell_type(cell_type):
