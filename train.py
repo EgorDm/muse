@@ -7,7 +7,7 @@ import tensorflow as tf
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--data_dir', type=str, default='data/lyrics/powermetal',
+    parser.add_argument('--data_dir', type=str, default='data/lyrics/dragonforce',
                         help='Path with all the data to train on. Separate them with ;')
     parser.add_argument('--vali_dir', type=str, default='data/lyrics/dragonforce_validate',
                         help='Path with all the data to use for validation.')
@@ -18,7 +18,7 @@ def main():
     parser.add_argument('--cell_size', type=int, default=512, help='Size of cell\'s hidden state.')
     parser.add_argument('--nlayers', type=int, default=3, help='Number of cell layers.')
     parser.add_argument('--cell', type=str, default='gru', help='Cell type [lstm, gru]')
-    parser.add_argument('--batch_size', type=int, default=40, help='Size of a batch')
+    parser.add_argument('--batch_size', type=int, default=50, help='Size of a batch')
     parser.add_argument('--seq_length', type=int, default=100, help='Length of a sequence')
     parser.add_argument('--num_epochs', type=int, default=50, help='Number of epochs to loop')
     parser.add_argument('--display_freq', type=int, default=50, help='Display log frequency')
