@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import string
+import tensorflow as tf
 
 def mkdir_or_not(d: str):
     if not os.path.exists(d):
@@ -26,3 +27,16 @@ def weighted_pick_v2(weights):
     t = np.cumsum(weights)
     s = np.sum(weights)
     return int(np.searchsorted(t, np.random.rand(1) * s))
+
+
+def get_cell_type(cell_type):
+    if cell_type == 'lstm':
+        return tf.nn.rnn_cell.LSTMCell
+    elif cell_type == 'gru':
+        return tf.nn.rnn_cell.GRUCell
+    # elif cell_type == 'simple_classic_rnn':
+    #     return tf.nn.rnn_cell.BasicRNNCell
+    # elif cell_type == 'classic_rnn':
+    #     return tf.nn.rnn_cell.RNNCell
+    else:
+        raise Exception('No such cell type {}'.format(cell_type))

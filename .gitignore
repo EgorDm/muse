@@ -1,5 +1,6 @@
 /data/log
 /data/save
+/data/config
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

@@ -2,7 +2,8 @@ from batchers.CharacterBatcher import CharacterBatcher
 from models.RnnModel import RNNModel
 from trainers.MainTrainer import MainTrainer
 import argparse
-import tensorflow as tf
+from utils import utils, config
+
 
 
 def main():
@@ -37,24 +38,12 @@ def run(settings):
                                settings.seq_length)
     validation_batcher = CharacterBatcher([settings.vali_dir], settings.lc, False, 8, 90)
 
-    model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=get_cell_type(settings.cell))
+    model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
 
     trainer = MainTrainer(batcher, validation_batcher, model, settings)
 
+    config.save_config(settings, trainer.model_name)
     trainer.train(settings.num_epochs)
-
-
-def get_cell_type(cell_type):
-    if cell_type == 'lstm':
-        return tf.nn.rnn_cell.LSTMCell
-    elif cell_type == 'gru':
-        return tf.nn.rnn_cell.GRUCell
-    # elif cell_type == 'simple_classic_rnn':
-    #     return tf.nn.rnn_cell.BasicRNNCell
-    # elif cell_type == 'classic_rnn':
-    #     return tf.nn.rnn_cell.RNNCell
-    else:
-        raise Exception('No such cell type {}'.format(cell_type))
 
 
 if __name__ == '__main__':
