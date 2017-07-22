@@ -1,9 +1,12 @@
 import os
+import re
 import string
 
 
 def clean_lines(text):
     pos = 0
+    text = re.sub(r'\[.*?\]', '', text)
+    text = re.sub(r'\(.*?\)', '', text)
     while pos < len(text):
         if text[pos] == ',' and pos + 1 < len(text) and text[pos + 1] in string.ascii_letters:
             text = text[:pos + 1] + ' ' + text[pos + 1:]

@@ -18,7 +18,7 @@ existing = [file[:(len(file) - 4)] for file in os.listdir(songs_dir)]
 
 def process_song(song):
     song_path = '{}/{}.txt'.format(songs_dir, song.title)
-    lyrics = '\n'.join(song.lyrics)
+    lyrics = song.get_lyrics()
     lyrics = clean.clean_lines(lyrics)
     print('Writing song {} to {}'.format(song.title, song_path))
     with open(song_path, 'w', encoding='utf8') as sf:
@@ -54,6 +54,8 @@ def grab_from_darklyrics(artist):
 
 
 if source == 0:
-    grab_from_azlyrics(artist)
+    for a in artist.split(','):
+        grab_from_azlyrics(a)
 else:
-    grab_from_darklyrics(artist)
+    for a in artist.split(','):
+        grab_from_darklyrics(a)

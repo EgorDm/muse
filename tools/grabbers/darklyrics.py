@@ -7,6 +7,14 @@ BASE_URL = 'http://www.darklyrics.com'
 ANTI_THROTTLE_DELAY = 20
 
 
+class MetalSong(Song):
+    def __init__(self, title, lyrics):
+        super().__init__(title, lyrics)
+
+    def get_lyrics(self):
+        return ''.join(self.lyrics)
+
+
 def get_album_links(artist):
     url = '{}/{}/{}.html'.format(BASE_URL, artist[0], artist)
     html = get_html(url)
@@ -33,7 +41,8 @@ def get_lyrics_by_album(url, throttle=True):
     for line in lyrics_div.contents:
         if line.name == 'h3':
             title = line.text.split(' ', 1)[1]
-            songs.append(Song(title, []))
+            if len(songs) > 0 and songs[-1].title == title: continue
+            songs.append(MetalSong(title, []))
             continue
         if len(songs) == 0: continue
 
