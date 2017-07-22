@@ -13,7 +13,7 @@ def main():
                         help='Path with all the data to use for validation.')
     parser.add_argument('--log_dir', type=str, default='data/log', help='Directory to store logs in')
     parser.add_argument('--save_dir', type=str, default='data/save', help='Directory to save checkpoints in.')
-    parser.add_argument('--name', type=float, default='mymodel',
+    parser.add_argument('--name', type=str, default='mymodel',
                         help='Name of the session. Will be used to identify saves and logs.')
     parser.add_argument('--cell_size', type=int, default=512, help='Size of cell\'s hidden state.')
     parser.add_argument('--nlayers', type=int, default=3, help='Number of cell layers.')
@@ -24,24 +24,20 @@ def main():
     parser.add_argument('--display_freq', type=int, default=50, help='Display log frequency')
     parser.add_argument('--lr', type=float, default=0.002, help='Learning rate')
     parser.add_argument('--kprob', type=float, default=0.8, help='Keep probability in the dropout layer')
-    parser.add_argument('--prime', type=float, default='The ', help='Text to use to generate more text')
+    parser.add_argument('--prime', type=str, default='The ', help='Text to use to generate more text')
     settings = parser.parse_args()
     run(settings)
 
 
 def run(settings):
     batcher = CharacterBatcher(settings.data_dir.split(';'), False, settings.batch_size, settings.seq_length)
-    validation_batcher = CharacterBatcher(settings.vali_dir, False, 8, 90)
+    validation_batcher = CharacterBatcher([settings.vali_dir], False, 8, 90)
 
     model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=get_cell_type(settings.cell))
 
     trainer = MainTrainer(batcher, validation_batcher, model, settings)
 
     trainer.train(10)
-
-
-if __name__ == '__main__':
-    main()
 
 
 def get_cell_type(cell_type):
@@ -55,3 +51,6 @@ def get_cell_type(cell_type):
     #     return tf.nn.rnn_cell.RNNCell
     else:
         raise Exception('No such cell type {}'.format(cell_type))
+
+if __name__ == '__main__':
+    main()
