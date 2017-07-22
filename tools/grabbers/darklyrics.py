@@ -39,6 +39,8 @@ def get_lyrics_by_album(url, throttle=True):
     lyrics_div = html.select('div.lyrics')[0]
     songs = []
     for line in lyrics_div.contents:
+        if line.name == 'div':
+            break
         if line.name == 'h3':
             title = line.text.split(' ', 1)[1]
             if len(songs) > 0 and songs[-1].title == title: continue
