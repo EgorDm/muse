@@ -1,6 +1,6 @@
 import time
 import re
-from dataset_processing.grabbers.models import Song
+from tools.grabbers.models import Song
 
 import utils.text
 from utils.text import get_html

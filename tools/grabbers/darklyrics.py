@@ -1,4 +1,4 @@
-from dataset_processing.grabbers.models import *
+from tools.grabbers.models import *
 from utils.text import get_html, fix_string_path
 from bs4 import NavigableString
 import time

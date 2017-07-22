@@ -1,14 +1,14 @@
 import os
 
-import clean
-from dataset_processing.grabbers.models import *
-from grabbers import azlyrics, darklyrics
+from tools import clean
+from tools.grabbers.models import *
+from tools.grabbers import azlyrics, darklyrics
 from utils.text import *
 
 artist = input('Artist: ')
 source = eval(input('Source: (azlyrics=0, darklyrics=1)'))
 
-songs_dir = 'data/artists/' + fix_string_path(artist)
+songs_dir = 'data/lyrics/' + fix_string_path(artist)
 
 if not os.path.exists(songs_dir):
     os.makedirs(songs_dir)
