@@ -7,21 +7,22 @@ import numpy as np
 from batchers.Batcher import Batcher
 from utils.dataset_utils import read_songs
 
-VOCABULARY = string.ascii_letters + ',.?!\'\n '
-VOCABULARY_LOOKUP = dict((char, i) for i, char in enumerate(VOCABULARY))
-VOCABULARY_SIZE = len(VOCABULARY)
+SPEC_CHARS = ',.?!\'\n '
 
 
 class CharacterBatcher(Batcher):
-    vocabulary_size = VOCABULARY_SIZE
     cursor = 0
 
-    def __init__(self, data_paths: list, random: bool = False, batch_size: int = 20, sequence_length: int = 8) -> None:
+    def __init__(self, data_paths: list, lowercase: bool = True, random: bool = False, batch_size: int = 20,
+                 sequence_length: int = 8) -> None:
+        self.lowercase = lowercase
         self.random = random
+        self._vocabulary, self._vocabulary_lookup, self._vocabulary_size = self._gen_vocabulary()
+
         data_raw = '\n'.join([read_songs(path) for path in data_paths]).replace('\n\n', '\n')
-        data_raw = data_raw.lower()
-        data_raw = filter(lambda char: char in VOCABULARY_LOOKUP, data_raw)
-        data = list(map(lambda char: VOCABULARY_LOOKUP[char], data_raw))  # translate to indices
+        if lowercase: data_raw = data_raw.lower()
+        data_raw = filter(lambda char: char in self.get_vocabulary(), data_raw)
+        data = list(map(lambda char: self.get_vocabulary_lookup()[char], data_raw))  # translate to indices
 
         self.data_length = len(data)
         self.epoch_size = self.data_length // (batch_size * sequence_length)
@@ -67,10 +68,15 @@ class CharacterBatcher(Batcher):
         return inputs, label
 
     def decode_text(self, c: list) -> str:
-        return "".join(map(lambda a: VOCABULARY[a], c))
+        return "".join(map(lambda a: self.get_vocabulary()[a], c))
 
     def encode_text(self, s: str) -> list:
-        return list(map(lambda c: VOCABULARY_LOOKUP[c], s))
+        return list(map(lambda c: self.get_vocabulary_lookup()[c], s))
 
-    def get_vocabulary_size(self):
-        return VOCABULARY_SIZE
+    def _gen_vocabulary(self) -> (list, dict, int):
+        if self.lowercase:
+            vocab = string.ascii_lowercase + SPEC_CHARS
+        else:
+            vocab = string.ascii_letters + SPEC_CHARS
+        lookup = dict((char, i) for i, char in enumerate(vocab))
+        return vocab, lookup, len(vocab)

@@ -1,5 +1,4 @@
 from trainers.BaseTrainer import BaseTrainer
-from batchers.CharacterBatcher import VOCABULARY, VOCABULARY_LOOKUP
 from utils.Logger import *
 from utils.utils import *
 
@@ -80,7 +79,7 @@ class MainTrainer(BaseTrainer):
         generated_text = prime
         state = np.zeros([1, self.model.nlayers * self.model.cell_size], dtype=np.float32)
         for c in prime[:-1]:
-            x = np.array([[VOCABULARY_LOOKUP[c]]])
+            x = np.array([[self.batcher.get_vocabulary_lookup()[c]]])
             feed = {self.model.X: x, self.model.pkeep: 1.0, self.model.Hin: state, self.model.batch_size: 1}
             yo, state = self._sess.run([self.model.Yo, self.model.H], feed_dict=feed)
 
@@ -88,8 +87,8 @@ class MainTrainer(BaseTrainer):
         for _ in range(length):
             feed = {self.model.X: x, self.model.pkeep: 1.0, self.model.Hin: state, self.model.batch_size: 1}
             yo, state = self._sess.run([self.model.Yo, self.model.H], feed_dict=feed)
-            c = weighted_pick(yo, len(VOCABULARY), topn=2)
+            c = weighted_pick(yo, self.batcher.get_vocabulary_size(), topn=2)
             x = np.array([[c]])  # shape [batch_size, sequence_length] with batch_size=1 and sequence_length=1
-            c = VOCABULARY[c]
+            c = self.batcher.get_vocabulary()[c]
             generated_text += c
         return generated_text

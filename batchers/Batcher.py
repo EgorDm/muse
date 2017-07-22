@@ -4,7 +4,9 @@ import numpy as np
 
 
 class Batcher(metaclass=ABCMeta):
-    vocabulary_size = 0
+    _vocabulary = []
+    _vocabulary_lookup = {}
+    _vocabulary_size = 0
     batch = 0
     epoch = 0
 
@@ -37,9 +39,19 @@ class Batcher(metaclass=ABCMeta):
         """
         pass
 
-    def get_vocabulary_size(self) -> int:
+    @abstractmethod
+    def _gen_vocabulary(self) -> (list, dict, int):
         """
-        :rtype: int
+        :rtype: (list, dict, int)
         :return:
         """
         pass
+
+    def get_vocabulary_size(self) -> int:
+        return self._vocabulary_size
+
+    def get_vocabulary(self) -> list:
+        return self._vocabulary
+
+    def get_vocabulary_lookup(self) -> dict:
+        return self._vocabulary_lookup

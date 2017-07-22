@@ -25,13 +25,17 @@ def main():
     parser.add_argument('--lr', type=float, default=0.002, help='Learning rate')
     parser.add_argument('--kprob', type=float, default=0.8, help='Keep probability in the dropout layer')
     parser.add_argument('--prime', type=str, default='The ', help='Text to use to generate more text')
+    parser.add_argument('--lc', type=bool, default=True, help='Lowercase all the training data.')
     settings = parser.parse_args()
     run(settings)
 
 
 def run(settings):
-    batcher = CharacterBatcher(settings.data_dir.split(';'), False, settings.batch_size, settings.seq_length)
-    validation_batcher = CharacterBatcher([settings.vali_dir], False, 8, 90)
+    if settings.lc:
+        settings.prime = settings.prime.lower()
+    batcher = CharacterBatcher(settings.data_dir.split(';'), settings.lc, False, settings.batch_size,
+                               settings.seq_length)
+    validation_batcher = CharacterBatcher([settings.vali_dir], settings.lc, False, 8, 90)
 
     model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=get_cell_type(settings.cell))
 
@@ -51,6 +55,7 @@ def get_cell_type(cell_type):
     #     return tf.nn.rnn_cell.RNNCell
     else:
         raise Exception('No such cell type {}'.format(cell_type))
+
 
 if __name__ == '__main__':
     main()
