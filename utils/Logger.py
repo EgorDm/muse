@@ -7,7 +7,7 @@ def print_learning_learned_comparison(batcher, X, Y, losses, batch_loss, batch_a
         decx = batcher.decode_text(X[k]).replace('\n', '|')
         decy = batcher.decode_text(Y[k]).replace('\n', '|')
         loss_string = "loss: {:.5f}".format(losses[k])
-        print_string = "{} │ {} │ {}"
+        print_string = "| {} │ {} │ {}"
         print(print_string.format(decx, decy, loss_string))
     # box formatting characters:
     # │ \u2502
