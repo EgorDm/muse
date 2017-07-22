@@ -5,23 +5,29 @@ from utils.utils import mkdir_or_not
 
 
 class BaseTrainer:
-    def __init__(self, batcher, validation_batcher, model, model_name, log_path, save_path):
+    def __init__(self, batcher, validation_batcher, model, settings):
+
         self.batcher = batcher
         self.validation_batcher = validation_batcher
         self.model = model
 
         timestamp = str(math.trunc(time.time()))
-        self.model_name = '{}_{}'.format(model_name, timestamp)
+        self.model_name = '{}_{}'.format(settings.name, timestamp)
 
-        mkdir_or_not(log_path)
-        mkdir_or_not(save_path)
+        mkdir_or_not(settings.log_dir)
+        mkdir_or_not(settings.save_dir)
 
-        self.save_path = save_path
+        self.save_path = settings.save_dir
 
-        self.summary_writer = tf.summary.FileWriter('{}/{}-training'.format(log_path, self.model_name))
-        self.validation_writer = tf.summary.FileWriter('{}/{}-validation'.format(log_path, self.model_name))
+        self.summary_writer = tf.summary.FileWriter('{}/{}-training'.format(settings.log_dir, self.model_name))
+        self.validation_writer = tf.summary.FileWriter('{}/{}-validation'.format(settings.log_dir, self.model_name))
 
         self.saver = tf.train.Saver(max_to_keep=1000)
+
+        self.lr = settings.lr
+        self.kprob = settings.kprob
+        self.prime = settings.prime
+        self.display_freq = settings.display_freq
 
     def train(self, epochs: int):
         pass

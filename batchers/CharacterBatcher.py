@@ -16,9 +16,9 @@ class CharacterBatcher(Batcher):
     vocabulary_size = VOCABULARY_SIZE
     cursor = 0
 
-    def __init__(self, data_path: str, random: bool = False, batch_size: int = 20, sequence_length: int = 8) -> None:
+    def __init__(self, data_paths: list, random: bool = False, batch_size: int = 20, sequence_length: int = 8) -> None:
         self.random = random
-        data_raw = read_songs(data_path).replace('\n\n', '\n')
+        data_raw = '\n'.join([read_songs(path) for path in data_paths]).replace('\n\n', '\n')
         data_raw = filter(lambda char: char in VOCABULARY_LOOKUP, data_raw)
         data = list(map(lambda char: VOCABULARY_LOOKUP[char], data_raw))  # translate to indices
 

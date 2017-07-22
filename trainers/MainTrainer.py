@@ -6,17 +6,12 @@ from utils.utils import *
 import numpy as np
 import tensorflow as tf
 
-learning_rate = 0.001
-dropout_pkeep = 0.8
-display_freq = 50
-prime_test = 'In the '
-
 
 class MainTrainer(BaseTrainer):
     _sess = None
 
-    def __init__(self, batcher, validation_batcher, model, model_name, log_path, save_path):
-        super().__init__(batcher, validation_batcher, model, model_name, log_path, save_path)
+    def __init__(self, batcher, validation_batcher, model, settings):
+        super().__init__(batcher, validation_batcher, model, settings)
 
     def train(self, epochs: int = 10):  # TODO continue where left off. Load state
         state = np.zeros([self.batcher.batch_size, self.model.nlayers * self.model.cell_size])
@@ -24,37 +19,38 @@ class MainTrainer(BaseTrainer):
         self._sess = tf.Session()
         self._sess.run(init)
 
-        progress = Progress(display_freq, size=111 + 2, msg="Training on next " + str(display_freq) + " batches")
+        progress = Progress(self.display_freq, size=111 + 2,
+                            msg="Training on next " + str(self.display_freq) + " batches")
 
         while self.batcher.epoch <= epochs:
             state = self._train_step(state)
 
-            if self.batcher.batch % display_freq == 0 and self.validation_batcher is not None:
+            if self.batcher.batch % self.display_freq == 0 and self.validation_batcher is not None:
                 self._validate()
 
-            if self.batcher.batch % (display_freq * 4) == 0:
-                text = self.generate_text(prime_test)
+            if self.batcher.batch % (self.display_freq * 4) == 0:
+                text = self.generate_text(self.prime)
                 print_generated_text(text)
 
-            if self.batcher.batch % (display_freq * 10) == 0:
+            if self.batcher.batch % (self.display_freq * 10) == 0:
                 saved_file = self.saver.save(self._sess, '{}/{}'.format(self.save_path, self.model_name),
                                              global_step=self.batcher.batch)
                 print("Saved file: " + saved_file)
 
-            progress.step(reset=self.batcher.batch % display_freq == 0)
+            progress.step(reset=self.batcher.batch % self.display_freq == 0)
 
         print('Done with training')
 
     def _train_step(self, state: np.ndarray) -> np.ndarray:
         inputs, labels = self.batcher.get_batch()
 
-        feed_dict = {self.model.X: inputs, self.model.Y_: labels, self.model.Hin: state, self.model.lr: learning_rate,
-                     self.model.pkeep: dropout_pkeep, self.model.batch_size: self.batcher.batch_size}
+        feed_dict = {self.model.X: inputs, self.model.Y_: labels, self.model.Hin: state, self.model.lr: self.lr,
+                     self.model.pkeep: self.kprob, self.model.batch_size: self.batcher.batch_size}
 
         _, predictions, output_state = self._sess.run([self.model.optimizer, self.model.Y, self.model.H],
                                                       feed_dict=feed_dict)
 
-        if self.batcher.batch % display_freq == 0:
+        if self.batcher.batch % self.display_freq == 0:
             self._train_log(inputs, labels, state)
 
         return output_state
