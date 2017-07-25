@@ -10,7 +10,7 @@ import random, string
 import sys
 from utils.dataset_utils import read_songs
 
-paths = ['../data/lyrics/dragonforce', '../data/lyrics/stratovarius']
+paths = ['data/lyrics/dragonforce', 'data/lyrics/stratovarius']
 text = '\n'.join([read_songs(path) for path in paths]).replace('\n\n', '\n').lower()
 
 print('corpus length:', len(text))
@@ -44,8 +44,9 @@ model.compile(loss='categorical_crossentropy', optimizer='adam')
 def sample(a, temperature=1.0):
     # helper function to sample an index from a probability array
     a = np.log(a) / temperature
-    a = np.exp(a) / np.sum(np.exp(a))
-    return np.argmax(np.random.multinomial(1, a, 1))
+    dist = np.exp(a) / np.sum(np.exp(a))
+    choices = range(int(len(a)))
+    return np.random.choice(choices, p=dist)
 
 
 # start with a small sample that increases each iteration
@@ -78,7 +79,7 @@ for iteration in range(1, 100):
             YYs[i * nbatch + j] = YY
 
     model.reset_states()
-    model.fit(XXs, YYs, batch_size=nbatch, nb_epoch=3, shuffle=False)
+    model.fit(XXs, YYs, batch_size=nbatch, epochs=100, shuffle=False)
 
     start_index = random.randint(0, len(text) - maxlen - 1)
 
@@ -93,7 +94,7 @@ for iteration in range(1, 100):
         sys.stdout.write(generated)
 
         model.reset_states()
-        for i in range(400 / maxlen):
+        for i in range(int(400 / maxlen)):
             x = np.zeros((nbatch, maxlen, len(chars)))
             for t, char in enumerate(sentence):
                 x[0, t, char_indices[char]] = 1.
@@ -104,7 +105,7 @@ for iteration in range(1, 100):
             # don't know if this is correct since each successive sample
             # doesn't take into account the prior...
             next_indices = [sample(preds, diversity) for preds in preds_seq]
-            next_chars = string.join([indices_char[next_index] for next_index in next_indices], '')
+            next_chars = ''.join([indices_char[next_index] for next_index in next_indices])
 
             generated += next_chars
             sentence = next_chars
