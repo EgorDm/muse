@@ -24,7 +24,7 @@ def main():
     parser.add_argument('--seq_length', type=int, default=100, help='Length of a sequence')
     parser.add_argument('--num_epochs', type=int, default=50, help='Number of epochs to loop')
     parser.add_argument('--display_freq', type=int, default=50, help='Display log frequency')
-    parser.add_argument('--lr', type=float, default=0.002, help='Learning rate')
+    parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
     parser.add_argument('--kprob', type=float, default=0.8, help='Keep probability in the dropout layer')
     parser.add_argument('--prime', type=str, default='The ', help='Text to use to generate more text')
     parser.add_argument('--lc', type=bool, default=True, help='Lowercase all the training data.')

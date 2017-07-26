@@ -56,8 +56,7 @@ class MainTrainer(BaseTrainer):
 
     def _train_log(self, inputs: np.ndarray, labels: np.ndarray, state: np.ndarray):
         feed_dict = {self.model.X: inputs, self.model.Y_: labels, self.model.Hin: state,
-                     self.model.pkeep: 1.0, self.model.batch_size: self.batcher.batch_size,
-                     self.model.sequence_length: self.batcher.sequence_length}
+                     self.model.pkeep: 1.0, self.model.batch_size: self.batcher.batch_size}
         y, l, bl, acc, smm = self._sess.run(
             [self.model.Y, self.model.seqloss, self.model.batchloss, self.model.accuracy, self.model.summaries],
             feed_dict=feed_dict)
@@ -69,8 +68,7 @@ class MainTrainer(BaseTrainer):
         state = np.zeros([self.validation_batcher.batch_size, self.model.nlayers * self.model.cell_size])
 
         feed_dict = {self.model.X: inputs, self.model.Y_: labels, self.model.Hin: state,
-                     self.model.pkeep: 1.0, self.model.batch_size: self.validation_batcher.batch_size,
-                     self.model.sequence_length: self.batcher.sequence_length}
+                     self.model.pkeep: 1.0, self.model.batch_size: self.validation_batcher.batch_size}
         ls, acc, smm = self._sess.run([self.model.batchloss, self.model.accuracy, self.model.summaries],
                                       feed_dict=feed_dict)
 
@@ -82,14 +80,12 @@ class MainTrainer(BaseTrainer):
         state = np.zeros([1, self.model.nlayers * self.model.cell_size], dtype=np.float32)
         for c in prime[:-1]:
             x = np.array([[self.batcher.get_vocabulary_lookup()[c]]])
-            feed = {self.model.X: x, self.model.pkeep: 1.0, self.model.Hin: state, self.model.batch_size: 1,
-                    self.model.sequence_length: 1}
+            feed = {self.model.X: x, self.model.pkeep: 1.0, self.model.Hin: state, self.model.batch_size: 1}
             yo, state = self._sess.run([self.model.Yo, self.model.H], feed_dict=feed)
 
         x = np.array([self.batcher.encode_text(prime[-1])])
         for _ in range(length):
-            feed = {self.model.X: x, self.model.pkeep: 1.0, self.model.Hin: state, self.model.batch_size: 1,
-                    self.model.sequence_length: 1}
+            feed = {self.model.X: x, self.model.pkeep: 1.0, self.model.Hin: state, self.model.batch_size: 1}
             yo, state = self._sess.run([self.model.Yo, self.model.H], feed_dict=feed)
             c = weighted_pick(yo, self.batcher.get_vocabulary_size(), topn=2)
             x = np.array([[c]])  # shape [batch_size, sequence_length] with batch_size=1 and sequence_length=1
