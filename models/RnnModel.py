@@ -77,8 +77,3 @@ class RNNModel(BaseModel):
         loss_summary = tf.summary.scalar("batch_loss", self.batchloss)
         acc_summary = tf.summary.scalar("batch_accuracy", self.accuracy)
         self.summaries = tf.summary.merge([loss_summary, acc_summary])
-
-
-def create_cell(pkeep, cell_size):
-    cell = rnn.GRUCell(cell_size)
-    return rnn.DropoutWrapper(cell, input_keep_prob=pkeep)

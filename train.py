@@ -1,5 +1,6 @@
 from batchers.CharacterBatcher import CharacterBatcher
 from models.RnnModel import RNNModel
+from models.EmbeddingModel import EmbeddingModel
 from trainers.MainTrainer import MainTrainer
 import argparse
 from utils import utils, config
@@ -38,7 +39,8 @@ def run(settings):
                                settings.seq_length)
     validation_batcher = CharacterBatcher([settings.vali_dir], settings.lc, False, 8, 90)
 
-    model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
+    # model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
+    model = EmbeddingModel(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
 
     trainer = MainTrainer(batcher, validation_batcher, model, settings)
 
