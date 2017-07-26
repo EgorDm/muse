@@ -1,5 +1,5 @@
 from batchers.CharacterBatcher import CharacterBatcher
-from models.RnnModel import RNNModel
+from models.OneHotModel import RNNModel
 from models.EmbeddingModel import EmbeddingModel
 from trainers.MainTrainer import MainTrainer
 import argparse
