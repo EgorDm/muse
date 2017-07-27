@@ -2,6 +2,9 @@ import os
 import numpy as np
 import string
 import tensorflow as tf
+from models.OneHotModel import OneHotModel
+from models.EmbeddingModel import EmbeddingModel
+
 
 def mkdir_or_not(d: str):
     if not os.path.exists(d):
@@ -40,3 +43,12 @@ def get_cell_type(cell_type):
     #     return tf.nn.rnn_cell.RNNCell
     else:
         raise Exception('No such cell type {}'.format(cell_type))
+
+
+def get_model_type(model):
+    if model == 'embedding':
+        return EmbeddingModel
+    elif model == 'onehot':
+        return OneHotModel
+    else:
+        raise Exception('No such model found:' + model)

@@ -1,5 +1,5 @@
 from batchers.CharacterBatcher import CharacterBatcher
-from models.OneHotModel import RNNModel
+from models.OneHotModel import OneHotModel
 from models.EmbeddingModel import EmbeddingModel
 from trainers.MainTrainer import MainTrainer
 from utils import utils, config
@@ -30,7 +30,7 @@ def run(settings):
 
     batcher = CharacterBatcher([], myconfig.lc, False, myconfig.batch_size,
                                myconfig.seq_length)
-    model = EmbeddingModel(batcher, myconfig.nlayers, myconfig.cell_size, cell_type=utils.get_cell_type(myconfig.cell))
+    model = utils.get_model_type(myconfig.model)(batcher, myconfig.nlayers, myconfig.cell_size, cell_type=utils.get_cell_type(myconfig.cell))
 
     trainer = MainTrainer(batcher, None, model, myconfig)
 

@@ -1,6 +1,4 @@
 from batchers.CharacterBatcher import CharacterBatcher
-from models.OneHotModel import RNNModel
-from models.EmbeddingModel import EmbeddingModel
 from trainers.MainTrainer import MainTrainer
 import argparse
 from utils import utils, config
@@ -28,6 +26,8 @@ def main():
     parser.add_argument('--kprob', type=float, default=0.8, help='Keep probability in the dropout layer')
     parser.add_argument('--prime', type=str, default='The ', help='Text to use to generate more text')
     parser.add_argument('--lc', type=bool, default=True, help='Lowercase all the training data.')
+    parser.add_argument('--model', type=str, default='embedding',
+                        help='Model you want to use for training. Currently you can choose between (embedding, onehot)')
     settings = parser.parse_args()
     run(settings)
 
@@ -40,7 +40,7 @@ def run(settings):
     validation_batcher = CharacterBatcher([settings.vali_dir], settings.lc, False, 8, 90)
 
     # model = RNNModel(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
-    model = EmbeddingModel(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
+    model = utils.get_model_type(settings.model)(batcher, settings.nlayers, settings.cell_size, cell_type=utils.get_cell_type(settings.cell))
 
     trainer = MainTrainer(batcher, validation_batcher, model, settings)
 

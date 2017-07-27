@@ -4,7 +4,7 @@ from tensorflow.contrib import rnn
 from tensorflow.contrib import layers
 
 
-class RNNModel(BaseModel):
+class OneHotModel(BaseModel):
     def __init__(self, batcher, nlayers: int, cell_size: int, cell_type=rnn.GRUCell):
         super().__init__()
         # Models parameters
