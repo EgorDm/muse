@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--config', type=str, required=True, help='Config you want to load defaults from')
     parser.add_argument('--checkpoint', type=str, required=True, help='Checkpoint you want to use')
     parser.add_argument('--save', default='last_model', type=str, help='Name of file to save text to.')
-    parser.add_argument('--save_dir', default='data/save', type=str, help='Name of file to save text to.')
+    parser.add_argument('--save_dir', default='data/samples', type=str, help='Name of file to save text to.')
     parser.add_argument('--prime', type=str, default='The ', help='Text to use to generate more text')
     parser.add_argument('--length', type=int, default=1000, help='Length of the generated text')
     settings = parser.parse_args()
