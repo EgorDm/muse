@@ -1,7 +1,7 @@
-from tensorflow.contrib.keras.python.keras.engine import Input, InputLayer
-from tensorflow.contrib.keras.python.keras.layers import Embedding, GRU, Dense, Activation, Reshape, Concatenate
-from tensorflow.contrib.keras.python.keras.models import Sequential
-from tensorflow.contrib.keras.python.keras.optimizers import Adam
+from keras.engine import InputLayer
+from keras.layers import Embedding, GRU, Dense, Activation
+from keras.models import Sequential
+from keras.optimizers import Adam
 
 
 class KerasEmbeddingModel:
