@@ -26,7 +26,7 @@ class EmbeddingModel(BaseModel):
         self.Y_ = tf.placeholder(tf.int32, [None, None], name='Y_')
         # Y_: [batch_size, sequence_length]
         Yo_ = tf.one_hot(self.Y_, batcher.get_vocabulary_size(), 1.0, 0.0)
-        # Yo_: [batch_size, sequence_length]
+        # Yo_: [batch_size, sequence_length, vocab_size]
 
         # Cell state
         self.Hin = tf.placeholder(tf.float32, [None, cell_size * nlayers], name='Hin')
@@ -45,7 +45,6 @@ class EmbeddingModel(BaseModel):
 
         # RNN
         Yr, H = tf.nn.dynamic_rnn(multicell, self.input_embeddings, dtype=tf.float32, initial_state=self.Hin)
-        print(Yr.shape)
         # Yr: [ batch_size, sequence_length, cell_size ]
         # H:  [ batch_size, cell_size * n_layers ] last state
 
