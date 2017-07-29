@@ -52,3 +52,9 @@ def get_model_type(model):
         return OneHotModel
     else:
         raise Exception('No such model found:' + model)
+
+
+def hot_one(x, vocab_size):
+    y = np.zeros(list(x.shape) + [vocab_size])
+    y[list(np.indices(y.shape[:-1])) + [x]] = 1
+    return y
