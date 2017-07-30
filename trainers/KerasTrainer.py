@@ -26,7 +26,7 @@ class KerasTrainer(BaseTrainer):
             if self.batcher.batch % self.display_freq == 0 and self.validation_batcher is not None:
                 self._validate()
 
-            if self.batcher.batch % (self.display_freq * 4) == 0:
+            if self.batcher.batch % (self.display_freq * 1) == 0: # TODO: tune down
                 text = self.generate_text(self.prime)
                 print_generated_text(text)
 
@@ -39,14 +39,14 @@ class KerasTrainer(BaseTrainer):
 
     def _train_step_keras(self):
         inputs, labels = self.batcher.get_batch()
-        self.model.model.train_on_batch(inputs, labels)
+        self.model.model.train_on_batch(inputs, hot_one(labels, self.batcher.get_vocabulary_size()))
 
         if self.batcher.batch % self.display_freq == 0:
-            self._train_log_keras(inputs, hot_one(labels, self.batcher.get_vocabulary_size()))
+            self._train_log_keras(inputs, labels)
 
     def _train_log_keras(self, inputs: np.ndarray, labels: np.ndarray):
         score, acc = self.model.model.evaluate(inputs, hot_one(labels, self.batcher.get_vocabulary_size()),
-                                               batch_size=self.batcher.batch_size)
+                                               batch_size=self.batcher.batch_size) # TODO: error
         y = self.model.model.predict(inputs, batch_size=self.batcher.batch_size)
         y = np.argmax(y, 2)
         loss = []
@@ -65,11 +65,11 @@ class KerasTrainer(BaseTrainer):
         generated_text = prime
         for c in prime[:-1]:
             x = np.array([[self.batcher.get_vocabulary_lookup()[c]]])
-            y = self.model.model.predict_on_batch(x, batch_size=1)
+            y = self.model.model.predict_on_batch(x)
 
         x = np.array([self.batcher.encode_text(prime[-1])])
         for _ in range(length):
-            y = self.model.model.predict_on_batch(x, batch_size=1)
+            y = self.model.model.predict_on_batch(x)
             c = weighted_pick(y, self.batcher.get_vocabulary_size(), topn=2)
             x = np.array([[c]])  # shape [batch_size, sequence_length] with batch_size=1 and sequence_length=1
             c = self.batcher.get_vocabulary()[c]
