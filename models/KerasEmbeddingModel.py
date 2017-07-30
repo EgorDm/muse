@@ -18,9 +18,9 @@ class KerasEmbeddingModel:
         model.add(Embedding(batcher.get_vocabulary_size(), self.cell_size))
         # input_embeddings: [batch_size, sequence_length, embeddings_dimensions]
 
+        model.add(GRU(cell_size, return_sequences=True, dropout=dropout))
         for _ in range(nlayers - 1):
-            model.add(GRU(cell_size, return_sequences=True, dropout=dropout))
-        model.add(GRU(cell_size, dropout=dropout, return_sequences=True))
+            model.add(GRU(cell_size, dropout=dropout, return_sequences=True))
         # [ batch_size, sequence_length, cell_size ]
 
         model.add(Dense(batcher.get_vocabulary_size()))

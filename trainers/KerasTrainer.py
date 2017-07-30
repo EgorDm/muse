@@ -26,14 +26,14 @@ class KerasTrainer(BaseTrainer):
             if self.batcher.batch % self.display_freq == 0 and self.validation_batcher is not None:
                 self._validate()
 
-            if self.batcher.batch % (self.display_freq * 1) == 0: # TODO: tune down
+            if self.batcher.batch % (self.display_freq * 5) == 0:
                 text = self.generate_text(self.prime)
                 print_generated_text(text)
 
             if self.batcher.batch % (self.display_freq * 10) == 0:
-                saved_file = self.saver.save(self._sess, '{}/{}'.format(self.save_path, self.model_name),
-                                             global_step=self.batcher.batch)
-                print("Saved file: " + saved_file)
+                save_path = '{}/{}_{}.h5'.format(self.save_path, self.model_name, self.batcher.batch)
+                self.model.model.save_weights(save_path)
+                print("Saved file: " + save_path)
 
             progress.step(reset=self.batcher.batch % self.display_freq == 0)
 
@@ -46,7 +46,7 @@ class KerasTrainer(BaseTrainer):
 
     def _train_log_keras(self, inputs: np.ndarray, labels: np.ndarray):
         score, acc = self.model.model.evaluate(inputs, hot_one(labels, self.batcher.get_vocabulary_size()),
-                                               batch_size=self.batcher.batch_size) # TODO: error
+                                               batch_size=self.batcher.batch_size)
         y = self.model.model.predict(inputs, batch_size=self.batcher.batch_size)
         y = np.argmax(y, 2)
         loss = []
@@ -61,17 +61,16 @@ class KerasTrainer(BaseTrainer):
                                                batch_size=self.batcher.batch_size)
         print_validation_stats(score, acc)
 
-    def generate_text(self, prime, length=1000):
+    def generate_text(self, prime, length=300):
         generated_text = prime
-        for c in prime[:-1]:
-            x = np.array([[self.batcher.get_vocabulary_lookup()[c]]])
-            y = self.model.model.predict_on_batch(x)
+        if len(generated_text) < self.batcher.sequence_length:
+            generated_text = ' '*(self.batcher.sequence_length-len(generated_text)) + generated_text
 
-        x = np.array([self.batcher.encode_text(prime[-1])])
+        x = np.array([self.batcher.encode_text(generated_text)])
         for _ in range(length):
             y = self.model.model.predict_on_batch(x)
-            c = weighted_pick(y, self.batcher.get_vocabulary_size(), topn=2)
-            x = np.array([[c]])  # shape [batch_size, sequence_length] with batch_size=1 and sequence_length=1
-            c = self.batcher.get_vocabulary()[c]
-            generated_text += c
+            c = weighted_pick(y[0][-1], self.batcher.get_vocabulary_size(), topn=2)
+            generated_text += self.batcher.get_vocabulary()[c]
+            x[0] = np.append(x[0][1:], c)
+
         return generated_text
